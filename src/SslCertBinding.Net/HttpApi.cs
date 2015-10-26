@@ -9,7 +9,7 @@ namespace SslCertBinding.Net
 		// ReSharper disable InconsistentNaming
 
 		public static void ThrowWin32ExceptionIfError(uint retVal) {
-			if (NOERROR != retVal) {
+			if (NO_ERROR != retVal) {
 				throw new Win32Exception(Convert.ToInt32(retVal));
 			}
 		}
@@ -33,41 +33,56 @@ namespace SslCertBinding.Net
 		public static extern uint HttpInitialize(
 			HTTPAPI_VERSION version,
 			uint flags,
-			IntPtr pReserved);
+            IntPtr pReserved);
 
-		[DllImport("httpapi.dll", SetLastError = true)]
-		public static extern uint HttpSetServiceConfiguration(
-				IntPtr serviceIntPtr,
-				HTTP_SERVICE_CONFIG_ID configId,
-				IntPtr pConfigInformation,
-				int configInformationLength,
-				IntPtr pOverlapped);
+        [DllImport("httpapi.dll", SetLastError = true)]
+        public static extern uint HttpSetServiceConfiguration(
+                IntPtr serviceIntPtr,
+                HTTP_SERVICE_CONFIG_ID configId,
+                IntPtr pConfigInformation,
+                int configInformationLength,
+                IntPtr pOverlapped);
 
-		[DllImport("httpapi.dll", SetLastError = true)]
-		public static extern uint HttpDeleteServiceConfiguration(
-			IntPtr serviceIntPtr,
-			HTTP_SERVICE_CONFIG_ID configId,
-			IntPtr pConfigInformation,
-			int configInformationLength,
-			IntPtr pOverlapped);
+        [DllImport("httpapi.dll", SetLastError = true)]
+        public static extern uint HttpSetServiceConfiguration(
+                IntPtr serviceIntPtr,
+                HTTP_SERVICE_CONFIG_ID configId,
+                HTTP_SERVICE_CONFIG_URLACL_SET pConfigInformation,
+                int configInformationLength,
+                IntPtr pOverlapped);
+
+        [DllImport("httpapi.dll", SetLastError = true)]
+        public static extern uint HttpDeleteServiceConfiguration(
+            IntPtr serviceIntPtr,
+            HTTP_SERVICE_CONFIG_ID configId,
+            IntPtr pConfigInformation,
+            int configInformationLength,
+            IntPtr pOverlapped);
+
+        [DllImport("httpapi.dll", SetLastError = true)]
+        public static extern uint HttpDeleteServiceConfiguration(
+            IntPtr serviceIntPtr,
+            HTTP_SERVICE_CONFIG_ID configId,
+            HTTP_SERVICE_CONFIG_URLACL_SET pConfigInformation,
+            int configInformationLength,
+            IntPtr pOverlapped);
 
 		[DllImport("httpapi.dll", SetLastError = true)]
 		public static extern uint HttpTerminate(
 			uint Flags,
-			IntPtr pReserved);
+            IntPtr pReserved);
 
-		[DllImport("httpapi.dll", SetLastError = true)]
-		public static extern uint HttpQueryServiceConfiguration(
-				IntPtr serviceIntPtr,
-				HTTP_SERVICE_CONFIG_ID configId,
-				IntPtr pInputConfigInfo,
-				int inputConfigInfoLength,
-				IntPtr pOutputConfigInfo,
-				int outputConfigInfoLength,
-				[Optional]
+        [DllImport("httpapi.dll", SetLastError = true)]
+        public static extern uint HttpQueryServiceConfiguration(
+                IntPtr serviceIntPtr,
+                HTTP_SERVICE_CONFIG_ID configId,
+                IntPtr pInputConfigInfo,
+                int inputConfigInfoLength,
+                IntPtr pOutputConfigInfo,
+                int outputConfigInfoLength,
+                [Optional]
 				out int pReturnLength,
-				IntPtr pOverlapped);
-
+                IntPtr pOverlapped);
 
 		public enum HTTP_SERVICE_CONFIG_ID
 		{
@@ -76,6 +91,35 @@ namespace SslCertBinding.Net
 			HttpServiceConfigUrlAclInfo,
 			HttpServiceConfigMax
 		}
+
+        [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Unicode)]
+        public struct HTTP_SERVICE_CONFIG_URLACL_KEY
+        {
+            [MarshalAs(UnmanagedType.LPTStr)]
+            public string pUrlPrefix;
+        }
+
+        [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Unicode)]
+        public struct HTTP_SERVICE_CONFIG_URLACL_PARAM
+        {
+            [MarshalAs(UnmanagedType.LPTStr)]
+            public string pStringSecurityDescriptor;
+        }
+
+		[StructLayout(LayoutKind.Sequential)]
+        public struct HTTP_SERVICE_CONFIG_URLACL_SET
+        {
+            public HTTP_SERVICE_CONFIG_URLACL_KEY KeyDesc;
+            public HTTP_SERVICE_CONFIG_URLACL_PARAM ParamDesc;
+        }
+
+        [StructLayout(LayoutKind.Sequential)]
+        public struct HTTP_SERVICE_CONFIG_URLACL_QUERY
+        {
+            public HTTP_SERVICE_CONFIG_QUERY_TYPE QueryDesc;
+            public HTTP_SERVICE_CONFIG_URLACL_KEY KeyDesc;
+            public Int32 dwToken;
+        }
 
 		[StructLayout(LayoutKind.Sequential)]
 		public struct HTTP_SERVICE_CONFIG_SSL_SET
@@ -197,7 +241,7 @@ namespace SslCertBinding.Net
 		#region Constants
 
 		public const uint HTTP_INITIALIZE_CONFIG = 0x00000002;
-		public const uint NOERROR = 0;
+		public const uint NO_ERROR = 0;
 		public const uint ERROR_INSUFFICIENT_BUFFER = 122;
 		public const uint ERROR_ALREADY_EXISTS = 183;
 		public const uint ERROR_FILE_NOT_FOUND = 2;
@@ -205,6 +249,6 @@ namespace SslCertBinding.Net
 
 		#endregion
 
-		private static readonly HTTPAPI_VERSION HttpApiVersion = new HTTPAPI_VERSION(1, 0);
+		public static readonly HTTPAPI_VERSION HttpApiVersion = new HTTPAPI_VERSION(1, 0);
 	}
 }

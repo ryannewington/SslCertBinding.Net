@@ -262,7 +262,7 @@ namespace SslCertBinding.Net
 							Marshal.FreeCoTaskMem(pInputConfigInfo);
 						}
 
-					} while (HttpApi.NOERROR == retVal);
+					} while (HttpApi.NO_ERROR == retVal);
 
 				});
 

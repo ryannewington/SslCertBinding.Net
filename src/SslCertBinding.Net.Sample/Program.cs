@@ -22,11 +22,35 @@ namespace SslCertBinding.Net.Sample
 				case "delete":
 					Delete(args, configuration);
 					break;
+                case "showurl":
+                    ShowUrlAcl(args, configuration);
+                    break;
+                case "addurl":
+                    {
+                        UrlAcl.Create(args[1], args[2]);
+                    }
+                    break;
+                case "rmurl":
+                    {
+                        UrlAcl.Delete(args[1]);
+                    }
+                    break;
 				default:
-					Console.WriteLine("Use \r\n'show [<IP:port>]' command to show all SSL Certificate bindings, \r\n'delete <IP:port>' to remove a binding and \r\n'bind <certificateThumbprint> <certificateStoreName> <IP:port> <appId>' to add or update a binding.");
+					Console.WriteLine("Use \r\n'show [<IP:port>]' command to show all SSL Certificate bindings, \r\n'delete <IP:port>' to remove a binding and \r\n'bind <certificateThumbprint> <certificateStoreName> <IP:port> <appId>' to add or update a binding.\r\nshowurl\tShow a list of all url acls");
 					break;
 			}
 		}
+
+        private static void ShowUrlAcl(string[] args, CertificateBindingConfiguration configuration)
+        {
+            var format = "{0,-40} {1,-39}";
+            Console.WriteLine(format, "Prefix", "SDDL");
+            Console.WriteLine("{0} {1}", new string('-', 40), new string('-', 39));
+            foreach (var urlAcl in UrlAcl.GetAllBindings())
+            {
+                Console.WriteLine(format, urlAcl.Prefix, urlAcl.Sddl);
+            }
+        }
 
 		private static void Show(string[] args, CertificateBindingConfiguration configuration) {
 			Console.WriteLine("SSL Certificate bindings:\r\n-------------------------\r\n");
